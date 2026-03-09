@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { clsx } from 'clsx';
 import { checkResult, findBestMove } from './gameLogic';
 import styles from './App.module.css';
 
@@ -35,7 +37,7 @@ export default function App() {
           setBoard(newBoard);
           setIsXNext(true);
         }
-      }, 300);
+      }, 400);
       return () => clearTimeout(timer);
     }
   }, [mode, isXNext, board, gameOver]);
@@ -64,31 +66,41 @@ export default function App() {
   };
 
   const statusText = result.winner
-    ? `${result.winner} wins!`
+    ? `WINNER: ${result.winner}`
     : result.isDraw
-      ? `It's a draw!`
-      : `Next: ${isXNext ? 'X' : 'O'}`;
+      ? `TIE GAME`
+      : `TURN: ${isXNext ? 'X' : 'O'}`;
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Tic Tac Toe</h1>
+    <motion.div 
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+      className={styles.container}
+    >
+      <div className={styles.header}>
+        <h1 className={styles.title}>
+          Tic<br/>Tac<br/>Toe
+        </h1>
+        <div className={styles.versionBadge}>v2.0</div>
+      </div>
 
       <div className={styles.modeSelector}>
         <button
-          className={`${styles.modeBtn} ${mode === 'pvp' ? styles.active : ''}`}
+          className={clsx(styles.modeBtn, mode === 'pvp' && styles.active)}
           onClick={() => handleModeChange('pvp')}
         >
-          Two Players
+          PVP
         </button>
         <button
-          className={`${styles.modeBtn} ${mode === 'ai' ? styles.active : ''}`}
+          className={clsx(styles.modeBtn, mode === 'ai' && styles.active)}
           onClick={() => handleModeChange('ai')}
         >
-          vs AI
+          VS AI
         </button>
       </div>
 
-      <div className={`${styles.status} ${gameOver ? styles.gameOver : ''}`}>
+      <div className={clsx(styles.statusPanel, gameOver && styles.gameOver)}>
         {statusText}
       </div>
 
@@ -96,35 +108,49 @@ export default function App() {
         {board.map((cell, i) => (
           <button
             key={i}
-            className={`${styles.cell} ${cell ? styles.filled : ''} ${
-              result.line?.includes(i) ? styles.winCell : ''
-            } ${cell === 'X' ? styles.x : cell === 'O' ? styles.o : ''}`}
+            className={clsx(
+              styles.cell,
+              cell === 'X' && styles.x,
+              cell === 'O' && styles.o,
+              result.line?.includes(i) && styles.winCell
+            )}
             onClick={() => handleClick(i)}
             disabled={!!cell || gameOver}
           >
-            {cell}
+            <AnimatePresence>
+              {cell && (
+                <motion.span
+                  initial={{ scale: 0, rotate: -45 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                >
+                  {cell}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
         ))}
       </div>
 
       <div className={styles.scoreBoard}>
-        <div className={`${styles.scoreItem} ${styles.x}`}>
-          <span className={styles.scoreLabel}>X</span>
+        <div className={clsx(styles.scoreItem, styles.x)}>
+          <span className={styles.scoreLabel}>P1 (X)</span>
           <span className={styles.scoreValue}>{score.X}</span>
         </div>
         <div className={styles.scoreItem}>
-          <span className={styles.scoreLabel}>Draw</span>
+          <span className={styles.scoreLabel}>DRAWS</span>
           <span className={styles.scoreValue}>{score.draw}</span>
         </div>
-        <div className={`${styles.scoreItem} ${styles.o}`}>
-          <span className={styles.scoreLabel}>O</span>
+        <div className={clsx(styles.scoreItem, styles.o)}>
+          <span className={styles.scoreLabel}>{mode === 'ai' ? 'AI (O)' : 'P2 (O)'}</span>
           <span className={styles.scoreValue}>{score.O}</span>
         </div>
       </div>
 
       <button className={styles.restartBtn} onClick={handleRestart}>
-        New Game
+        REBOOT SYSTEM
       </button>
-    </div>
+    </motion.div>
   );
 }

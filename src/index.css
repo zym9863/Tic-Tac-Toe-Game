@@ -1,3 +1,14 @@
+/* Neo-Brutalist Global Styles */
+:root {
+  --bg-color: #Ebe4d3; /* off-white / light yellow */
+  --black: #111111;
+  --white: #ffffff;
+  --blue: #4052FF;
+  --pink: #FF3366;
+  --yellow: #FFDE00;
+  --green: #00FF85;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,9 +20,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  color: #fff;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(var(--black) 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: 'DM Mono', monospace;
+  color: var(--black);
+  overflow-x: hidden;
 }
 
 #root {
@@ -20,4 +34,5 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 2rem;
 }
